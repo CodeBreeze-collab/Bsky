@@ -1,0 +1,8 @@
+{
+  "username": "floridanews.bsky.social",
+  "password_env_var": "BLUESKY_APP_PASSWORD_f_news",
+  "dry_run_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/f_news_dry_run_matches.jsonl",
+  "log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/auto_follow_logs/f_news_auto_follow_log.jsonl",
+  "request_delay_seconds": 3
+}
+

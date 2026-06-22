@@ -1,0 +1,7 @@
+{
+  "accounts": [
+    {"handle": "newenglandtopnews.bsky.social", "env_var": "BLUESKY_APP_PASSWORD_ne_news"},
+    {"handle": "vegansearchengine.bsky.social", "env_var": "BLUESKY_APP_PASSWORD_v_search"}
+  ],
+  "rate_delay": 1.0
+}

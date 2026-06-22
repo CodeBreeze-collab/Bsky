@@ -1,0 +1,25 @@
+{
+  "my_handle": "ethicalsearch.bsky.social",
+  "app_password_env_var": "BLUESKY_APP_PASSWORD",
+  "targets": {
+    "target_a": "policyevidence.bsky.social",
+    "target_b": "todaynews05.bsky.social"
+  },
+  "files": {
+    "dry_run_log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/pe_dry_run_matches.jsonl",
+    "cursor_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/last_follow_cursors/pe_last_follower_cursor.txt",
+    "auto_follow_log": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/auto_follow_logs/pe_auto_follow_log.jsonl"
+  },
+  "controls": {
+    "keywords": [],
+    "max_per_run": 100
+  },
+  "api": {
+    "base_url": "https://bsky.social/xrpc"
+  },
+  "tool": {
+    "pagination_delay": 0.6,
+    "max_profiles_per_batch": 25,
+    "heartbeat_interval_minutes": 2
+  }
+}

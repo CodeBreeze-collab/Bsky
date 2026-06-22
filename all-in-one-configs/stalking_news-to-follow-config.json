@@ -1,0 +1,100 @@
+{
+  "my_handle": "stalking-alerts.bsky.social",
+  "app_password_env_var": "BLUESKY_APP_PASSWORD_stalking_news",
+  "database": {
+    "db_path": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/v2/bluesky_social.db",
+    "followers_table": "sn_followers",
+    "following_table": "sn_following"
+  },
+  "targets": {
+    "target_a": "stalking-alerts.bsky.social",
+    "target_b": [
+      "zyxomma.bsky.social"
+    ]
+  },
+  "files": {
+    "dry_run_log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/sn_dry_run_matches.jsonl",
+    "cursor_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/last_follow_cursors/sn_last_follower_cursor.txt",
+    "auto_follow_log": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/auto_follow_logs/sn_auto_follow_log.jsonl"
+  },
+  "controls": {
+    "max_per_run": 1000,
+    "keywords": [
+      "stalking",
+      "harassment",
+      "cyberstalking",
+      "online harassment",
+      "doxxing",
+      "doxxed",
+      "abuse",
+      "domestic violence",
+      "DV",
+      "intimate partner violence",
+      "IPV",
+      "coercive control",
+      "restraining order",
+      "protection order",
+      "safe housing",
+      "women's shelter",
+      "domestic violence shelter",
+      "rape crisis",
+      "sexual assault",
+      "SA survivor",
+      "victim advocate",
+      "victim services",
+      "crime victims",
+      "trauma informed",
+      "safety planning",
+      "consumer protection",
+      "consumer safety",
+      "fraud",
+      "scam",
+      "scam alert",
+      "identity theft",
+      "data breach",
+      "privacy",
+      "digital privacy",
+      "online safety",
+      "internet safety",
+      "cybersecurity",
+      "infosec",
+      "OSINT",
+      "open source intelligence",
+      "FTC",
+      "consumer affairs",
+      "attorney general",
+      "AG office",
+      "legal aid",
+      "public defender",
+      "civil rights",
+      "ACLU",
+      "journalist",
+      "reporter",
+      "investigative journalism",
+      "crime reporter",
+      "newsroom",
+      "breaking news",
+      "true crime",
+      "true crime podcast",
+      "campus safety",
+      "Title IX",
+      "university safety",
+      "student affairs",
+      "HR compliance",
+      "workplace harassment",
+      "mutual aid",
+      "community support",
+      "neighborhood watch",
+      "community watch",
+      "public safety"
+    ]
+  },
+  "api": {
+    "base_url": "https://bsky.social/xrpc"
+  },
+  "tool": {
+    "pagination_delay": 0.6,
+    "max_profiles_per_batch": 25,
+    "heartbeat_interval_minutes": 2
+  }
+}
