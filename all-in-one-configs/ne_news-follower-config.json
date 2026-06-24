@@ -9,7 +9,7 @@
   "targets": {
     "target_a": "newenglandtopnews.bsky.social",
     "target_b": [
-      "benmullin.bsky.social", "writingisagift.bsky.social","kaitatjewel.bsky.social", "sharonarocker.bsky.social", "genejm1017.bsky.social"
+      "robertr369.bsky.social"
     ]
   },
   "files": {
@@ -19,6 +19,8 @@
   },
   "controls": {
     "keywords": [
+      "Journalist",
+      "News",
       "Epstein",
       "New York",
       "NY",
