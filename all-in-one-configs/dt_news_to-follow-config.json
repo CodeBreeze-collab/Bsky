@@ -1,9 +1,9 @@
 {
-  "my_handle": "the-epstein-class.bsky.social",
+  "my_handle": "sirpedosfriends.bsky.social",
   "app_password_env_var": "BLUESKY_APP_PASSWORD_dt_news",
   "targets": {
-    "target_a": "the-epstein-class.bsky.social",
-    "target_b": ["robertr369.bsky.social"]
+    "target_a": "sirpedosfriends.bsky.social",
+    "target_b": ["kissedbythesun.bsky.social", "kackbro.bsky.social"]
   },
   "files": {
     "dry_run_log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/dt_news_dry_run_matches.jsonl",

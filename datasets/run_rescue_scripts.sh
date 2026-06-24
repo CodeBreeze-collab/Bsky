@@ -53,6 +53,21 @@ touch "$LOG_FILE"
 log_message "🚀 Starting Animal Rescue Data Pipeline Processing Engine..."
 log_message "📅 Target Date Directory: $CURRENT_DATE"
 
+log_message "🔧 CONFIG CHECK — Variables in use:"
+log_message "   BSKY_DATE        = ${BSKY_DATE:-<not set, using today>}"
+log_message "   BSKY_HANDLE      = ${BSKY_HANDLE:-<not set>}"
+log_message "   BSKY_INPUT_FILE  = ${BSKY_INPUT_FILE:-<not set>}"
+log_message "   BSKY_DAYS        = ${BSKY_DAYS:-<not set>}"
+log_message "   GEMINI_API_KEY   = ${GEMINI_API_KEY:+<set>}${GEMINI_API_KEY:-<NOT SET>}"
+log_message "   BASE_DIR         = $BASE_DIR"
+log_message "   SCRIPT1_PATH     = $SCRIPT1_PATH"
+log_message "   SCRIPT2_PATH     = $SCRIPT2_PATH"
+log_message "   SCRIPT3_PATH     = $SCRIPT3_PATH"
+log_message "   SCRIPT4_PATH     = $SCRIPT4_PATH"
+log_message "   GCS_BUCKET       = $GCS_BUCKET"
+log_message "   GCS_DEST_PATH    = $GCS_DESTINATION_PATH"
+log_message "   GCS_CREDS_JSON   = $GCS_CREDS_JSON"
+
 ARGS=(--output-file "$CLEANED_OUTPUT_FILE")
 [[ -n "$BSKY_HANDLE" ]]     && ARGS+=(--handle "$BSKY_HANDLE")
 [[ -n "$BSKY_INPUT_FILE" ]] && ARGS+=(--input-file "$BSKY_INPUT_FILE")
