@@ -1,0 +1,25 @@
+{
+  "my_handle": "rescue-sos.bsky.social",
+  "app_password_env_var": "BLUESKY_APP_PASSWORD_dt_news",
+  "targets": {
+    "target_a": "rescue-sos.bsky.social",
+    "target_b": ["glendunlap.bsky.social"]
+  },
+  "files": {
+    "dry_run_log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/rescue_news_dry_run_matches.jsonl",
+    "cursor_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/last_follow_cursors/rescue_news_last_follower_cursor.txt",
+    "auto_follow_log": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/auto_follow_logs/rescue_news_auto_follow_log.jsonl"
+  },
+  "controls": {
+    "keywords": ["Pets", "Cats", "Dogs", "Rescue", "Foster", "Vegan", "Animal", "Wildlife"],
+    "max_per_run": 5000
+  },
+  "api": {
+    "base_url": "https://bsky.social/xrpc"
+  },
+  "tool": {
+    "pagination_delay": 0.6,
+    "max_profiles_per_batch": 25,
+    "heartbeat_interval_minutes": 2
+  }
+}

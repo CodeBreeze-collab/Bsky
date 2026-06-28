@@ -1,0 +1,25 @@
+{
+  "my_handle": "hotbikes.bsky.social",
+  "app_password_env_var": "BLUESKY_APP_PASSWORD_m_news",
+  "targets": {
+    "target_a": "hotbikes.bsky.social",
+    "target_b": ["chrismedlandf1.bsky.social"]
+  },
+  "files": {
+    "dry_run_log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/m_news_dry_run_matches.jsonl",
+    "cursor_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/last_follow_cursors/m_news_last_follower_cursor.txt",
+    "auto_follow_log": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/auto_follow_logs/m_news_auto_follow_log.jsonl"
+  },
+  "controls": {
+    "keywords": ["bike", "biker", "motorbike", "motorbikes"],
+    "max_per_run": 5000
+  },
+  "api": {
+    "base_url": "https://bsky.social/xrpc"
+  },
+  "tool": {
+    "pagination_delay": 0.6,
+    "max_profiles_per_batch": 25,
+    "heartbeat_interval_minutes": 2
+  }
+}
