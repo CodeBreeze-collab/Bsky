@@ -9,7 +9,7 @@
   "targets": {
     "target_a": "newenglandtopnews.bsky.social",
     "target_b": [
-      "rheumcat.bsky.social"
+      "onestpress.onestnetwork.com"
     ]
   },
   "files": {
@@ -211,6 +211,7 @@
       "ET",
       "Acela Corridor",
       "Massachusetts",
+      "Cambridge",
       "MA",
       "Boston",
       "Reporter",
