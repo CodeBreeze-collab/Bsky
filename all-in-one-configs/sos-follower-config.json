@@ -1,0 +1,7 @@
+{
+  "username": "rescue-sos.bsky.social",
+  "password_env_var": "BLUESKY_APP_PASSWORD_sos",
+  "dry_run_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/sos_news_dry_run_matches.jsonl",
+  "log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/sos_auto_follow_log.jsonl",
+  "request_delay_seconds": 15
+}

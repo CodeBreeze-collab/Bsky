@@ -1,15 +1,15 @@
 {
-  "my_handle": "ethicalsearch.bsky.social",
-  "app_password_env_var": "BLUESKY_APP_PASSWORD",
+  "my_handle": "veevasearch.com",
+  "app_password_env_var": "BLUESKY_APP_PASSWORD_v_search",
   "database": {
     "db_path": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/v2/bluesky_social.db",
     "followers_table": "vse_followers",
     "following_table": "vse_following"
   },
   "targets": {
-    "target_a": "vegansearchengine.bsky.social",
+    "target_a": "veevasearch.com",
     "target_b": [
-       "15outof10.org"
+       "tibbygirl.bsky.social", "animalsbeingcute.bsky.social"
     ]
   },
   "files": {
