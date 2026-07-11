@@ -6,7 +6,7 @@ MY_HANDLE = 'ethicalsearch.bsky.social'
 MY_APP_PASSWORD = 'bilm-gvql-5toq-d434'
 
 # --- Target (The account you want to scrape) ---
-TARGET_HANDLE = 'vegansearchengine.bsky.social'# 'nycacckills.bsky.social' #'newenglandtopnews.bsky.social' #'the-epstein-class.bsky.social'
+TARGET_HANDLE = 'sharonantorina.bsky.social'  # Example target
 
 
 def fetch_external_posts():
@@ -14,14 +14,14 @@ def fetch_external_posts():
 
     try:
         # Log in as the "Actor"
-        print(f"Logging in as {MY_HANDLE}... {MY_APP_PASSWORD}")
+        print(f"Logging in as {MY_HANDLE}...")
         client.login(MY_HANDLE, MY_APP_PASSWORD)
 
         params = {'actor': TARGET_HANDLE}
         cursor = None
         count = 0
 
-        filename = f'/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/my_posts/{TARGET_HANDLE.replace(".", "_")}_posts_06-01-2026.jsonl'
+        filename = f'{TARGET_HANDLE.replace(".", "_")}_posts_06-01-2026.jsonl'
 
         with open(filename, 'w', encoding='utf-8') as f:
             print(f"Fetching posts from {TARGET_HANDLE}...")
@@ -35,7 +35,7 @@ def fetch_external_posts():
                 for feed_view in profile_feed.feed:
                     post = feed_view.post
 
-                    # Extract URLs from the rich text facets
+                    # 1. Extract text URLs from the rich text facets
                     urls = []
                     if post.record.facets:
                         for facet in post.record.facets:
@@ -43,31 +43,53 @@ def fetch_external_posts():
                                 if hasattr(feature, 'uri'):
                                     urls.append(feature.uri)
 
+                    # 2. Extract Embedded Media Image URLs
+                    image_urls = []
+                    if post.embed:
+                        # Grab the structural type dynamically
+                        embed_type = getattr(post.embed, 'py_type', None) or getattr(post.embed, '$type', None)
+
+                        # Handle standard images or the new 5-10 image galleries
+                        if embed_type in ['app.bsky.embed.images#view', 'app.bsky.embed.gallery#view']:
+                            # Images use .images; Gallery uses .items
+                            images_list = getattr(post.embed, 'images', None) or getattr(post.embed, 'items', None)
+                            if images_list:
+                                for img in images_list:
+                                    image_urls.append(img.fullsize)
+
+                        # Handle images inside quote tweets (Record with Media)
+                        elif embed_type == 'app.bsky.embed.recordWithMedia#view':
+                            media = getattr(post.embed, 'media', None)
+                            if media:
+                                media_type = getattr(media, 'py_type', None) or getattr(media, '$type', None)
+                                if media_type in ['app.bsky.embed.images#view', 'app.bsky.embed.gallery#view']:
+                                    images_list = getattr(media, 'images', None) or getattr(media, 'items', None)
+                                    if images_list:
+                                        for img in images_list:
+                                            image_urls.append(img.fullsize)
+
                     # Build the human-readable web URL
                     rkey = post.uri.split('/')[-1]
                     post_url = f"https://bsky.app/profile/{post.author.handle}/post/{rkey}"
 
-                    # --- NEW: Check if it is a Reply ---
-                    # If post.record has a 'reply' property, it's a reply
+                    # Check if it is a Reply
                     reply_metadata = getattr(post.record, 'reply', None)
                     is_reply = reply_metadata is not None
-
-                    # Optional: Grab what it is replying to if you want to reconstruct threads later
                     parent_uri = reply_metadata.parent.uri if is_reply else None
 
-                    # --- NEW: Check if it is a Repost ---
-                    # If feed_view has a 'reason', the target user just reposted it
+                    # Check if it is a Repost
                     is_repost = getattr(feed_view, 'reason', None) is not None
 
-                    # Construct the updated record payload
+                    # Construct the final record payload
                     record = {
                         "url": post_url,
                         "date": post.record.created_at,
                         "text": post.record.text,
                         "urls": urls,
+                        "image_urls": image_urls,  # <-- Added image URLs list here
                         "is_reply": is_reply,
                         "is_repost": is_repost,
-                        "parent_uri": parent_uri  # Handy to track down the parent post
+                        "parent_uri": parent_uri
                     }
 
                     f.write(json.dumps(record) + '\n')
