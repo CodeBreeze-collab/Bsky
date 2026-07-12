@@ -25,7 +25,7 @@ def resolve_handle_to_did(handle):
     return None
 
 
-def test_video_extraction(url):
+def test_carousel_extraction(url):
     print(f"Target Web URL: {url}\n")
 
     # 1. Split the web link components
@@ -63,36 +63,43 @@ def test_video_extraction(url):
 
         embed = posts[0].get("embed", {})
         embed_type = embed.get("$type", "")
-        print(f"[Step 4] Post found! Embed type: {embed_type}")
+        print(f"[Step 4] Post found! Embed container type: {embed_type}")
 
-        # 5. Extract based on expanded media layout rules
-        video_url = None
-        video_source = None
+        # 5. Extract images based on standalone vs nested media layouts
+        image_urls = []
 
-        # Isolate the media block whether it's standalone or nested inside a quote record
+        # Isolate target media block whether standalone or nested inside a hybrid quote record
         media_block = embed if embed_type != "app.bsky.embed.recordWithMedia#view" else embed.get("media", {})
         actual_type = media_block.get("$type", "")
 
-        if actual_type == "app.bsky.embed.video#view":
-            video_url = media_block.get("playlist")
-            video_source = "native_hls"
-        elif actual_type == "app.bsky.embed.external#view":
-            external_uri = media_block.get("external", {}).get("uri", "")
-            # Check if the external target points to an interactive video service
-            if any(provider in external_uri.lower() for provider in ["youtube.com", "youtu.be", "vimeo.com"]):
-                video_url = external_uri
-                video_source = "external_link"
+        # Branch logic to read image arrays based on active layout type
+        if actual_type == "app.bsky.embed.images#view":
+            images_list = media_block.get("images", [])
+            print(f"[Step 5] Parsing standard image layout (up to 4 items)...")
+            for img_obj in images_list:
+                fullsize_url = img_obj.get("fullsize")
+                if fullsize_url and fullsize_url not in image_urls:
+                    image_urls.append(fullsize_url)
 
-        if video_url:
-            print(f"\n✅ Success! Video URL found ({video_source}):")
-            print(f"👉 {video_url}")
+        elif actual_type == "app.bsky.embed.gallery#view":
+            items_list = media_block.get("items", [])
+            print(f"[Step 5] Parsing extended gallery carousel layout (5+ items)...")
+            for img_obj in items_list:
+                fullsize_url = img_obj.get("fullsize")
+                if fullsize_url and fullsize_url not in image_urls:
+                    image_urls.append(fullsize_url)
+
+        if image_urls:
+            print(f"\n✅ Success! Extracted {len(image_urls)} carousel images:")
+            for idx, img in enumerate(image_urls, start=1):
+                print(f" 👉 [{idx}]: {img}")
         else:
-            print("\n⚠️ Post fetched successfully, but no video element or platform link was found.")
+            print("\n⚠️ Post fetched successfully, but no matching images/gallery layout arrays were found.")
 
     except Exception as e:
         print(f"❌ Request execution failed: {e}")
 
 
 if __name__ == "__main__":
-    target_post = "https://bsky.app/profile/ckinser.bsky.social/post/3mq5hrsphds2g"
-    test_video_extraction(target_post)
+    target_post = "https://bsky.app/profile/ckinser.bsky.social/post/3mq47sgzkzc24"
+    test_carousel_extraction(target_post)

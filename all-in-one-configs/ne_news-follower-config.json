@@ -9,7 +9,7 @@
   "targets": {
     "target_a": "newenglandtopnews.bsky.social",
     "target_b": [
-      "onestpress.onestnetwork.com"
+      "psorc32.bsky.social", "onestpress.onestnetwork.com", "newyorkalmanack.bsky.social"
     ]
   },
   "files": {
@@ -20,6 +20,7 @@
   "controls": {
     "keywords": [
       "Journalist",
+      "Trump",
       "News",
       "Epstein",
       "New York",

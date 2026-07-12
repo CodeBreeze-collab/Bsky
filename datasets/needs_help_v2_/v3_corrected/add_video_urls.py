@@ -6,8 +6,8 @@ import requests
 from datetime import datetime
 
 # Input and Output paths following your consolidated structure
-INPUT_DIR = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help_v2_/v3_corrected" # "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/debug-src"  # "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help_v2_/v3/has_pledge"
-OUTPUT_DIR = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help_v2_/v3_corrected/video_enriched_5" # "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/debug-out" # "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help_v2_/v3_corrected/video_enriched_4"
+INPUT_DIR = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help_v2_/v3_corrected"
+OUTPUT_DIR = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help_v2_/v3_corrected/video_enriched_6"
 
 # Bluesky Public AppView Endpoints
 BSKY_GET_POSTS = "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts"
@@ -77,7 +77,7 @@ def resolve_handle(handle):
 
 
 def fetch_video_urls(did_uris):
-    """Queries Bluesky for an array of DID-based URIs and extracts playlist paths."""
+    """Queries Bluesky for an array of DID-based URIs and extracts playlist paths or platform links."""
     video_map = {}
     if not did_uris:
         return video_map
@@ -93,16 +93,24 @@ def fetch_video_urls(did_uris):
                     continue
 
                 embed = post.get("embed", {})
+                embed_type = embed.get("$type", "")
 
-                # Check for standard video views
-                if embed.get("$type") == "app.bsky.embed.video#view":
-                    video_map[rkey] = embed.get("playlist", "")
+                # Normalize to extract the media block whether standalone or nested inside a quote post
+                media_block = embed if embed_type != "app.bsky.embed.recordWithMedia#view" else embed.get("media", {})
+                actual_type = media_block.get("$type", "")
 
-                # Check for video attached inside quote posts
-                elif embed.get("$type") == "app.bsky.embed.recordWithMedia#view":
-                    media = embed.get("media", {})
-                    if media.get("$type") == "app.bsky.embed.video#view":
-                        video_map[rkey] = media.get("playlist", "")
+                # Option A: Process native Bluesky HLS stream video playlists
+                if actual_type == "app.bsky.embed.video#view":
+                    playlist_url = media_block.get("playlist")
+                    if playlist_url:
+                        video_map[rkey] = playlist_url
+
+                # Option B: Process embedded attachment link cards referencing external video providers
+                elif actual_type == "app.bsky.embed.external#view":
+                    external_uri = media_block.get("external", {}).get("uri", "")
+                    if any(provider in external_uri.lower() for provider in ["youtube.com", "youtu.be", "vimeo.com"]):
+                        video_map[rkey] = external_uri
+
     except Exception as e:
         print(f"  [Warning] Bluesky post query error: {e}")
 
