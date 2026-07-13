@@ -1,8 +1,10 @@
+import os
 import re
 import requests
 
 
 class BlueskyCommentLikes:
+
     def __init__(self):
         self.base_url = "https://public.api.bsky.app/xrpc"
 
@@ -22,28 +24,30 @@ class BlueskyCommentLikes:
         if target.startswith("at://"):
             return target
 
-        # Parse standard browser post link
-        match = re.search(r"https://bsky\.app/profile/([^/]+)/post/([^/]+)", target)
+        # Strips out query strings (?key=val), hashes (#anchor), and extra trailing slashes
+        match = re.search(
+            r"https://bsky\.app/profile/([^/?#\s]+)/post/([^/?#\s]+)", target
+        )
         if not match:
-            raise ValueError("Target string is neither a valid AT URI nor a recognized Bluesky web URL.")
+            raise ValueError(
+                "Target string is neither a valid AT URI nor a recognized Bluesky web URL."
+            )
 
         handle_or_did, rkey = match.groups()
 
-        # Resolve to DID if it's a vanity/human handle
         if not handle_or_did.startswith("did:"):
             did = self._resolve_handle_to_did(handle_or_did)
             if not did:
-                raise ValueError(f"Could not resolve the handle '{handle_or_did}' extracted from the URL.")
+                raise ValueError(
+                    f"Could not resolve the handle '{handle_or_did}' extracted from the URL."
+                )
         else:
             did = handle_or_did
 
         return f"at://{did}/app.bsky.feed.post/{rkey}"
 
     def get_likers(self, target_url_or_uri: str, max_results: int = 100) -> list:
-        """
-        Returns a list of clean handles (usernames) who liked the target comment/post.
-        Handles full pagination loops automatically up to your designated max_results limit.
-        """
+        """Returns a list of clean handles (usernames) who liked the target comment/post."""
         try:
             at_uri = self._normalize_to_at_uri(target_url_or_uri)
         except ValueError as err:
@@ -54,11 +58,8 @@ class BlueskyCommentLikes:
         cursor = None
         endpoint = f"{self.base_url}/app.bsky.feed.getLikes"
 
-        # Loop until we run out of likes or hit our target cap
         while len(likers) < max_results:
-            # Calculate next chunk size (API max is 100 items per request)
             chunk_limit = min(100, max_results - len(likers))
-
             params = {"uri": at_uri, "limit": chunk_limit}
             if cursor:
                 params["cursor"] = cursor
@@ -66,7 +67,9 @@ class BlueskyCommentLikes:
             try:
                 resp = requests.get(endpoint, params=params, timeout=10)
                 if resp.status_code != 200:
-                    print(f"[API Error] Server returned status code {resp.status_code}")
+                    print(
+                        f"[API Error] Server returned status code {resp.status_code}"
+                    )
                     break
 
                 data = resp.json()
@@ -78,28 +81,71 @@ class BlueskyCommentLikes:
                     if handle:
                         likers.append(handle)
 
-                # Paginate using the server cursor token
                 cursor = data.get("cursor")
                 if not cursor or not likes_chunk:
-                    break  # No more records left on the server thread
+                    break
 
             except Exception as e:
-                print(f"[Network Error] Connection interrupted during cursor retrieval: {e}")
+                print(
+                    f"[Network Error] Connection interrupted during cursor retrieval: {e}"
+                )
                 break
 
         return likers
 
+    def get_likers_from_file(
+        self, file_path: str, max_results_per_post: int = 100
+    ) -> dict:
+        """Reads Bluesky post links from a text file and collects likers for each."""
+        results = {}
 
-# --- Verification Sandbox ---
+        if not os.path.exists(file_path):
+            print(f"[Error] The file '{file_path}' does not exist.")
+            return results
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            urls = [
+                line.strip()
+                for line in f
+                if line.strip() and not line.strip().startswith("#")
+            ]
+
+        if not urls:
+            print(f"[Warning] No valid URLs found in '{file_path}'.")
+            return results
+
+        # print(f"Found {len(urls)} target posts in '{file_path}'. Processing queue... ")
+
+        for index, url in enumerate(urls, 1):
+            # print(f"\n[{index}/{len(urls)}] Target: {url}")
+            likers = self.get_likers(url, max_results=max_results_per_post)
+            # print(f" -> Found {len(likers)} likers:")
+
+            # Print handles right now instead of waiting for the file to finish
+            for handle in likers:
+                print(f"{handle}")
+
+            results[url] = likers
+
+        return results
+
+
+# --- Batch Execution ---
 if __name__ == "__main__":
     fetcher = BlueskyCommentLikes()
 
-    # Test link (Can be a top-level post or a nested comment link)
-    sample_post = "https://bsky.app/profile/stlcatfishmike.bsky.social/post/3mqge4mupyc2u"
+    input_file = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/bsky_posts.txt"
 
-    print("Connecting to Bluesky ecosystem...")
-    usernames = fetcher.get_likers(sample_post, max_results=50)
+    # Batch retrieval initialization (will print handles live)
+    batch_results = fetcher.get_likers_from_file(
+        input_file, max_results_per_post=50
+    )
 
-    print(f"\nFound {len(usernames)} account profiles:")
-    for username in usernames:
-        print(f"👉 @{username}")
+    # Compilation stat summary at the absolute end
+    all_unique_handles = set()
+    for handles in batch_results.values():
+        all_unique_handles.update(handles)
+
+    print("\n" + "=" * 40)
+    print(f"BATCH COMPLETE: Collected {len(all_unique_handles)} unique users.")
+    print("=" * 40)
