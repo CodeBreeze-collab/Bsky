@@ -3,7 +3,7 @@
   "app_password_env_var": "BLUESKY_APP_PASSWORD_dt_news",
   "targets": {
     "target_a": "sirpedosfriends.bsky.social",
-    "target_b": ["chiefskitty.bsky.social"]
+    "target_b": ["mjfree.bsky.social"]
   },
   "files": {
     "dry_run_log_file": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/dry_run_matches/dt_news_dry_run_matches.jsonl",
