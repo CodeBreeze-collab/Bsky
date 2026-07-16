@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import json
 import os
 import random
@@ -87,16 +87,36 @@ class BlueskyReposter:
             print(f"[Network Error] Connection failed during repost: {e}")
         return False
 
-    def process_queue(self, jsonl_file: str, min_delay: float = 5.0, max_delay: float = 15.0):
-        """Reads JSONL output and reposts matching, underperforming rescue posts with randomized delays."""
+    def process_queue(
+        self,
+        jsonl_file: str,
+        min_delay: float = 5.0,
+        max_delay: float = 15.0,
+        min_age_days: float = None,
+        max_age_days: float = None
+    ):
+        """Reads JSONL output and reposts matching, underperforming rescue posts with age filtering and randomized delays."""
         if not os.path.exists(jsonl_file):
             print(f"[Error] Source file not found: {jsonl_file}")
             return
 
         target_categories = {"Needs Foster", "Needs Shelter Pull", "Needs Donations"}
         actions_taken = 0
+        now = datetime.now(timezone.utc)
 
-        print(f"📖 Scanning {jsonl_file} for actionable posts...")
+        # Build dynamic time limits for age filtering if defined
+        min_cutoff = timedelta(days=min_age_days) if min_age_days is not None else None
+        max_cutoff = timedelta(days=max_age_days) if max_age_days is not None else None
+
+        # Print out the current target window configuration
+        age_info = []
+        if min_age_days is not None:
+            age_info.append(f"at least {min_age_days} days old")
+        if max_age_days is not None:
+            age_info.append(f"at most {max_age_days} days old")
+        window_str = f" ({' and '.join(age_info)})" if age_info else ""
+
+        print(f"📖 Scanning {jsonl_file} for actionable posts{window_str}...")
 
         with open(jsonl_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
@@ -112,13 +132,13 @@ class BlueskyReposter:
                 print(f"[Warning] Skipped malformed JSON line: {e}")
                 continue
 
+            # 1. Category and basic validation filters
             category = post.get("category")
             is_repost = post.get("is_repost", False)
             uri = post.get("uri")
             cid = post.get("cid")
             post_url = post.get("post_url", "Unknown Link")
 
-            # Validation checks
             if not uri or not cid:
                 continue
 
@@ -131,9 +151,27 @@ class BlueskyReposter:
             if uri in self.reposted_uris:
                 continue
 
+            # 2. Dynamic Age Window Filter
+            # Fall back to 'posted_at' if 'indexedAt' isn't available
+            timestamp_str = post.get("indexedAt") or post.get("posted_at")
+            if timestamp_str:
+                try:
+                    post_time = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                    post_age = now - post_time
+
+                    if min_cutoff is not None and post_age < min_cutoff:
+                        # Post is too new
+                        continue
+                    if max_cutoff is not None and post_age > max_cutoff:
+                        # Post is too old
+                        continue
+                except Exception as e:
+                    print(f"[Warning] Could not parse timestamp '{timestamp_str}': {e}. Skipping post.")
+                    continue
+
             print(f"\n📢 Found actionable post: [{category}] - {post_url}")
 
-            # Perform the repost
+            # 3. Perform the repost
             success = self.repost(uri, cid)
             if success:
                 print(f"✅ Reposted successfully!")
@@ -157,7 +195,7 @@ class BlueskyReposter:
 if __name__ == "__main__":
     BOT_HANDLE = os.environ.get("BLUESKY_BOT_HANDLE")
     BOT_APP_PASSWORD = os.environ.get("BLUESKY_BOT_PASSWORD")
-    INPUT_FILE = "flagged_posts.jsonl"
+    INPUT_FILE = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help/07-15-2026/low-reposts.jsonl"
 
     if not BOT_HANDLE or not BOT_APP_PASSWORD:
         print("[Error] Missing environment variables. Please configure:")
@@ -166,6 +204,14 @@ if __name__ == "__main__":
     else:
         reposter = BlueskyReposter()
 
-        # Log in, then process the file with a random delay between 5.0 and 15.0 seconds
+        # Log in, then process the file with:
+        # - Randomized delay between 5.0 and 15.0 seconds
+        # - Only repost items that were posted between 3 and 5 days ago (supports float values like 3.5 too!)
         if reposter.login(BOT_HANDLE, BOT_APP_PASSWORD):
-            reposter.process_queue(INPUT_FILE, min_delay=5.0, max_delay=15.0)
+            reposter.process_queue(
+                jsonl_file=INPUT_FILE,
+                min_delay=5.0,
+                max_delay=15.0,
+                min_age_days=5.0,
+                max_age_days=7.0
+            )

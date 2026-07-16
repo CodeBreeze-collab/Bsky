@@ -6,7 +6,7 @@ MY_HANDLE = 'ethicalsearch.bsky.social'
 MY_APP_PASSWORD = 'bilm-gvql-5toq-d434'
 
 # --- Target (The account you want to scrape) ---
-TARGET_HANDLE = 'sharonantorina.bsky.social'  # Example target
+TARGET_HANDLE = 'newenglandtopnews.bsky.social'
 
 
 def fetch_external_posts():
@@ -21,7 +21,7 @@ def fetch_external_posts():
         cursor = None
         count = 0
 
-        filename = f'{TARGET_HANDLE.replace(".", "_")}_posts_06-01-2026.jsonl'
+        filename = f'{TARGET_HANDLE.replace(".", "_")}_posts_07-16-2026-2.jsonl'
 
         with open(filename, 'w', encoding='utf-8') as f:
             print(f"Fetching posts from {TARGET_HANDLE}...")
@@ -35,6 +35,11 @@ def fetch_external_posts():
                 for feed_view in profile_feed.feed:
                     post = feed_view.post
 
+                    # Identify the embed type dynamically (if any)
+                    embed_type = None
+                    if post.embed:
+                        embed_type = getattr(post.embed, 'py_type', None) or getattr(post.embed, '$type', None)
+
                     # 1. Extract text URLs from the rich text facets
                     urls = []
                     if post.record.facets:
@@ -45,13 +50,9 @@ def fetch_external_posts():
 
                     # 2. Extract Embedded Media Image URLs
                     image_urls = []
-                    if post.embed:
-                        # Grab the structural type dynamically
-                        embed_type = getattr(post.embed, 'py_type', None) or getattr(post.embed, '$type', None)
-
-                        # Handle standard images or the new 5-10 image galleries
+                    if embed_type:
+                        # Handle standard images or the 5-10 image galleries
                         if embed_type in ['app.bsky.embed.images#view', 'app.bsky.embed.gallery#view']:
-                            # Images use .images; Gallery uses .items
                             images_list = getattr(post.embed, 'images', None) or getattr(post.embed, 'items', None)
                             if images_list:
                                 for img in images_list:
@@ -78,7 +79,22 @@ def fetch_external_posts():
                     parent_uri = reply_metadata.parent.uri if is_reply else None
 
                     # Check if it is a Repost
-                    is_repost = getattr(feed_view, 'reason', None) is not None
+                    # In get_author_feed, a repost is indicated by a 'reason' object (ReasonRepost)
+                    is_repost = False
+                    reason = getattr(feed_view, 'reason', None)
+                    if reason:
+                        reason_type = getattr(reason, 'py_type', None) or getattr(reason, '$type', None) or ""
+                        if "reasonRepost" in reason_type:
+                            is_repost = True
+
+                    # Check if it is a Quote Repost
+                    # Quotes embed other records (with or without media)
+                    is_quote_repost = False
+                    if embed_type:
+                        is_quote_repost = any(
+                            t in embed_type
+                            for t in ['app.bsky.embed.record', 'app.bsky.embed.recordWithMedia']
+                        )
 
                     # Construct the final record payload
                     record = {
@@ -86,9 +102,10 @@ def fetch_external_posts():
                         "date": post.record.created_at,
                         "text": post.record.text,
                         "urls": urls,
-                        "image_urls": image_urls,  # <-- Added image URLs list here
+                        "image_urls": image_urls,
                         "is_reply": is_reply,
                         "is_repost": is_repost,
+                        "is_quote_repost": is_quote_repost,  # <-- Added flag
                         "parent_uri": parent_uri
                     }
 

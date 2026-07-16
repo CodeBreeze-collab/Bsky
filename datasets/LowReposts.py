@@ -58,7 +58,7 @@ class BlueskyPostAuditor:
         if not self.gemini_enabled or not text.strip():
             return {"status": "General Update", "rescue_name": None}
 
-        # Prompt updated to include 'Group Summary' and prioritize its rules
+        # Prompt updated to split donations into requested vs thanked
         prompt = f"""
         Analyze the following animal welfare / rescue social media post. 
         Categorize it into exactly ONE of these statuses:
@@ -66,6 +66,7 @@ class BlueskyPostAuditor:
         - Needs Shelter Pull
         - Reserved for Rescue
         - Needs Donations
+        - Donations Thanked
         - More Info about Animal
         - Group Summary
         - General Update
@@ -76,8 +77,9 @@ class BlueskyPostAuditor:
         3. "Needs Shelter Pull": Urgent plea asking an accredited rescue network to pull an animal from a high-kill/local shelter (typically focused on a single animal).
         4. "Reserved for Rescue": The animal has successfully secured placement, or is safe with a specific rescue. If a specific rescue's name is mentioned, extract it.
         5. "Needs Donations": Requests for financial help, sponsorships, medical funds, supplies, wishlists, GoFundMe links, or paid monthly subscriptions (e.g., support us for £1 a month) for a specific animal or sanctuary.
-        6. "More Info about Animal": Behavioral notes, medical updates, or bios expanding on a specific pet's personality.
-        7. "General Update": Standard everyday content, generic sanctuary updates, heatwave warnings, or anything that doesn't cleanly fit the other options.
+        6. "Donations Thanked": Acknowledging, thanking, or celebrating donations that have been received, pledges that have been paid, or fundraiser goals that have successfully been met.
+        7. "More Info about Animal": Behavioral notes, medical updates, or bios expanding on a specific pet's personality.
+        8. "General Update": Standard everyday content, generic sanctuary updates, heatwave warnings, or anything that doesn't cleanly fit the other options.
 
         Post text:
         \"\"\"{text}\"\"\"
@@ -259,11 +261,11 @@ if __name__ == "__main__":
     auditor = BlueskyPostAuditor()
 
     ACCOUNTS_FILE = "accounts.txt"
-    OUTPUT_FILE = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help/07-15-2026/low-reposts.jsonl"
+    OUTPUT_FILE = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help/07-16-2026/low-reposts-3.jsonl"
 
     REPOST_THRESHOLD = 25
     MIN_AGE_DAYS = 1.0
-    MAX_AGE_DAYS = 14.0
+    MAX_AGE_DAYS = 2.0
     MAX_POSTS_TO_CHECK = 50
     FILTER_UNDERPERFORMING = True
 
