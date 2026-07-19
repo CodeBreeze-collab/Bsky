@@ -4,7 +4,7 @@
   "targets": {
     "target_a": "westcoastnews.bsky.social",
     "target_b": [
-       "daylightsdnews.bsky.social"
+       "deflock-redmond.bsky.social"
     ]
   },
   "files": {
@@ -14,17 +14,7 @@
   },
   "controls": {
     "keywords": [
-    "California", "San Diego", "Bay Area", "Los Angeles", "SD", "CA", "Orange County", "SoCal", "NorCal", "CenCal",
-    "The Bay", "SF Bay Area", "Silicon Valley", "Inland Empire", "IE", "OC", "The Valley", "The 805", "The City",
-    "Daygo", "Sactown", "Sacramento", "Long Beach", "LBC", "WeHo", "NoHo", "Santa Monica", "SaMo", "East Bay",
-    "North Bay", "South Bay", "Left Coast", "Best Coast", "PNW", "PCH", "Hwy 1", "June Gloom", "Golden State",
-    "Hella", "The 405", "The 101", "Cascadia", "PST", "Pacific Time",
 
-    "San Francisco", "San Fran", "SF", "Oakland", "Oaktown", "San Jose", "San Jo", "Fresno", "Bakersfield",
-    "Santa Barbara", "Ventura", "Riverside", "Palm Springs", "Huntington Beach", "Surf City", "Malibu",
-    "Seattle", "Portland", "PDX", "SeaTac", "Vancouver WA", "Eugene", "Salem", "Tacoma", "Olympia",
-    "Spokane", "Bend", "Washington State", "WA", "Oregon", "OR", "Pacific Northwest", "Evergreen State",
-    "The Mountain Is Out", "Sunbreak", "Skookum"
   ],
     "max_per_run": 5000
   },

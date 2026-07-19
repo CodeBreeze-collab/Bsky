@@ -195,7 +195,7 @@ class BlueskyReposter:
 if __name__ == "__main__":
     BOT_HANDLE = os.environ.get("BLUESKY_BOT_HANDLE")
     BOT_APP_PASSWORD = os.environ.get("BLUESKY_BOT_PASSWORD")
-    INPUT_FILE = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help/07-15-2026/low-reposts.jsonl"
+    INPUT_FILE = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/needs_help/07-16-2026/low-reposts-2.jsonl"
 
     if not BOT_HANDLE or not BOT_APP_PASSWORD:
         print("[Error] Missing environment variables. Please configure:")
@@ -212,6 +212,6 @@ if __name__ == "__main__":
                 jsonl_file=INPUT_FILE,
                 min_delay=5.0,
                 max_delay=15.0,
-                min_age_days=5.0,
-                max_age_days=7.0
+                min_age_days=1.0,
+                max_age_days=2.0
             )

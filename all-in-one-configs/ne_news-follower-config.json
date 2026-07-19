@@ -1,5 +1,5 @@
 {
-  "my_handle": "newenglandtopnews.bsky.social",
+  "my_handle": "newyorktopnews.bsky.social",
   "app_password_env_var": "BLUESKY_APP_PASSWORD_ne_news",
   "database": {
     "db_path": "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/v2/bluesky_social.db",
@@ -9,7 +9,7 @@
   "targets": {
     "target_a": "newenglandtopnews.bsky.social",
     "target_b": [
-      "citizenactionny.org"
+      "cyi12.bsky.social"
     ]
   },
   "files": {
