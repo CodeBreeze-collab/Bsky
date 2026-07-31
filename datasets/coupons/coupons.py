@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 class GoodSearchScraper:
     def __init__(
         self,
-        url: str = "https://www.goodsearch.com/coupons/petsandfriends.co.uk",
+        url: str = "https://www.goodsearch.com/coupons/gap.com", #"https://www.goodsearch.com/coupons/petsandfriends.co.uk",
         headless: bool = True,
     ):
         self.url = url
