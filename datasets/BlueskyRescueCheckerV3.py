@@ -293,7 +293,7 @@ def main():
         since_date = datetime.now(timezone.utc) - timedelta(days=args.days)
         folder_date = datetime.now().strftime('%m-%d-%Y')
 
-    final_input = args.input_file or str(base / "bluesky_rescue_accounts-03-12-2026-handle-title.jsonl")
+    final_input = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/my_posts/bluesky_rescue_accounts-03-12-2026-handle-title.jsonl" # args.input_file or str(base / "bluesky_rescue_accounts-03-12-2026-handle-title.jsonl")
     final_output = args.output_file or str(
         base / "needs_help" / folder_date / "bluesky_rescue_posts_output-w-post-date.jsonl")
 
