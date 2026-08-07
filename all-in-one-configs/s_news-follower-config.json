@@ -4,7 +4,7 @@
   "targets": {
     "target_a": "westcoastnews.bsky.social",
     "target_b": [
-       "deflock-redmond.bsky.social"
+       "voiceofsandiego.org"
     ]
   },
   "files": {

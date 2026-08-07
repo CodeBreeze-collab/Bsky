@@ -9,7 +9,7 @@
   "targets": {
     "target_a": "veevasearch.com",
     "target_b": [
-       "shouldhaveanima.bsky.social"
+       "veganibalecter.bsky.social"
     ]
   },
   "files": {
@@ -50,9 +50,10 @@
       "Earthling",
       "Pet Owner",
       "Pet Parent",
-      "Dog Mom",
-      "Dog Dad",
-      "Cat Lady",
+      "Dog",
+      "Dogs",
+      "Cats",
+      "Cat",
       "Feline",
       "Canine",
       "Puppy",
@@ -116,8 +117,7 @@
       "Long Island",
       "Staten Island",
       "Brooklyn",
-      "Hudson Valley",
-      "Upstate NY"
+      "Hudson Valley"
     ],
     "max_per_run": 5000
   },

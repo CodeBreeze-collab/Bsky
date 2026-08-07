@@ -4,7 +4,7 @@
   "targets": {
     "target_a": "floridanews.bsky.social",
     "target_b": [
-      "miaagainstfash.bsky.social"
+      "vetmack.bsky.social"
     ]
   },
   "files": {
@@ -14,7 +14,10 @@
   },
   "controls": {
     "keywords": [
-
+      "Journalist",
+      "Trump",
+      "News",
+      "Epstein"
     ],
     "max_per_run": 1000
   },
