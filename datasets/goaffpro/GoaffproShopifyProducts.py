@@ -1,11 +1,12 @@
 import json
 from pathlib import Path
+import unicodedata
 import requests
 
 
 def enrich_stores_with_products(
     input_jsonl_path: str,
-    output_jsonl_path: str = 'enriched_stores.jsonl',
+    output_jsonl_path: str = 'enriched_stores-w-products.jsonl',
     max_products_per_store: int = 10,
 ):
   """Reads a JSONL file of store URLs, queries Shopify's /products.json endpoint,
@@ -25,7 +26,7 @@ def enrich_stores_with_products(
   success_count = 0
 
   if output_path.exists():
-    print(f'Found existing output file. Loading progress for resume...')
+    print('Found existing output file. Loading progress for resume...')
     with open(output_path, 'r', encoding='utf-8') as out_f:
       for line in out_f:
         if line.strip():
@@ -58,13 +59,26 @@ def enrich_stores_with_products(
           continue
         record = json.loads(line)
         store_id = record.get('store_id')
-        store_url = record.get('store_url', '').strip()
+
+        # Normalize unicode (fixes ligatures like 'ﬁ' -> 'fi') and strip
+        raw_store_url = record.get('store_url', '')
+        store_url = unicodedata.normalize('NFKC', raw_store_url).strip()
 
         # Skip if already processed (Restart-proof check)
         if store_id and str(store_id) in processed_store_ids:
           print(
               f'Skipping already processed store ID: {store_id} ({store_url})'
           )
+          continue
+
+        # Skip non-merchant platform/internal URLs (e.g., goaffpro directory links)
+        if not store_url or 'goaffpro.com' in store_url:
+          print(f'Skipping non-merchant URL: {store_url}')
+          record['product_urls'] = []
+          out_f.write(json.dumps(record) + '\n')
+          out_f.flush()
+          if store_id:
+            processed_store_ids.add(str(store_id))
           continue
 
         # Normalize store URL to include protocol
@@ -118,5 +132,5 @@ def enrich_stores_with_products(
 
 
 if __name__ == '__main__':
-  input_jsonl = '/Users/hdon/Desktop/go-affpro-pages/goaffpro-my-stores/extracted_my_stores_2.jsonl'
-  enrich_stores_with_products(input_jsonl, 'enriched_stores.jsonl')
+  input_jsonl = '/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/enriched_stores-all.jsonl'
+  enrich_stores_with_products(input_jsonl, 'enriched_stores-w-products.jsonl')
