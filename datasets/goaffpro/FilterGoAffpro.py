@@ -1,57 +1,53 @@
 import json
-import os
-
-# File paths
-input_path = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/enriched_stores-w-products.jsonl"
-output_path = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/filtered_enriched_stores.jsonl"
+from pathlib import Path
 
 
-def filter_jsonl(input_file, output_file):
-    processed_count = 0
-    kept_count = 0
+def main():
+  # Define input and output file paths
+  input_path = Path(
+      "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/enriched_stores-w-products-cleaned.jsonl"
+  )
+  output_path = input_path.with_name(
+      "enriched_stores-w-products-filtered-final.jsonl"
+  )
 
-    # Ensure output directory exists
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+  print(f"Processing: {input_path.name}")
 
-    with open(input_file, 'r', encoding='utf-8') as infile, \
-            open(output_file, 'w', encoding='utf-8') as outfile:
+  omitted_count = 0
+  kept_count = 0
 
-        for line_num, line in enumerate(infile, 1):
-            line_stripped = line.strip()
-            if not line_stripped:
-                continue
+  with open(input_path, "r", encoding="utf-8") as infile, open(
+      output_path, "w", encoding="utf-8"
+  ) as outfile:
+    for line in infile:
+      line_stripped = line.strip()
+      if not line_stripped:
+        continue
 
-            try:
-                data = json.loads(line_stripped)
-                processed_count += 1
+      try:
+        data = json.loads(line_stripped)
+      except json.JSONDecodeError:
+        continue  # Skip malformed lines if any exist
 
-                store_url = data.get("store_url", "")
-                commission = data.get("commission")
+      base_url = data.get("baseUrl", "")
+      commission = data.get("commission")
 
-                # Check conditions
-                has_goaffpro = "https://goaffpro.com/" in store_url
-                is_commission_null = (
-                        commission is None
-                        or str(commission).strip().lower() in ["null", "none", ""]
-                )
+      # Omit if:
+      # 1. "https://goaffpro.com" is in the baseUrl
+      # 2. "commission" is null (Python's None)
+      if "https://goaffpro.com" in base_url or commission is None:
+        omitted_count += 1
+        continue
 
-                # Omit if store_url has goaffpro OR commission is null
-                if has_goaffpro or is_commission_null:
-                    continue
+      # Write valid lines back out
+      outfile.write(line_stripped + "\n")
+      kept_count += 1
 
-                # Otherwise, write the record to the output file
-                outfile.write(json.dumps(data) + '\n')
-                kept_count += 1
-
-            except json.JSONDecodeError as e:
-                print(f"Warning: Skipping invalid JSON on line {line_num}: {e}")
-
-    print("--- Filtering Summary ---")
-    print(f"Total lines processed: {processed_count}")
-    print(f"Total lines kept: {kept_count}")
-    print(f"Total lines omitted: {processed_count - kept_count}")
-    print(f"Filtered file saved to: {output_file}")
+  print(f"Filtering complete!")
+  print(f"- Kept records: {kept_count}")
+  print(f"- Omitted records: {omitted_count}")
+  print(f"- Output saved to: {output_path}")
 
 
 if __name__ == "__main__":
-    filter_jsonl(input_path, output_path)
+  main()
