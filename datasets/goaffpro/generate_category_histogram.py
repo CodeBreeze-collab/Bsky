@@ -12,7 +12,7 @@ def generate_category_histogram(input_file):
                 continue
             try:
                 data = json.loads(line)
-                category = data.get("consolidated_category")
+                category = data.get("category")
                 if category:
                     categories.append(category.strip())
                 else:
@@ -47,6 +47,6 @@ def generate_category_histogram(input_file):
 
 if __name__ == "__main__":
     # Pointing to your summary-enriched file (or you can use your other dataset file)
-    input_path = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/stores-consolidated-categories.jsonl"
 
+    input_path = "/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/stores-consolidated-categories-aff-network-final-fixed.jsonl"
     generate_category_histogram(input_path)

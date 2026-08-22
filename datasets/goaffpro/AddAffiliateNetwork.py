@@ -25,7 +25,7 @@ def update_jsonl(input_filename, output_filename):
 
 # --- Example Usage ---
 # Replace 'input.jsonl' and 'output.jsonl' with your actual file names
-input_file = '/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/stores-consolidated-categories.jsonl'
-output_file = '/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/stores-consolidated-categories-aff-network.jsonl'
+input_file = '/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/enriched_stores-w-products-filtered-final-categorized-summary-2.jsonl'
+output_file = '/Users/hdon/Projects/Firebase/real-time/bsky-firehose/python/bsky/datasets/goaffpro/stores-consolidated-categories-aff-network-2.jsonl'
 
 update_jsonl(input_file, output_file)
